@@ -80,6 +80,9 @@ export default class MyLeaves extends LightningElement {
     this.showModalPopup = false;
     this.showToast('Data saved successfuly');
     refreshApex(this.myLeavesWireResult);
+
+    const refreshEvent = new CustomEvent('refreshleaverequests');
+    this.dispatchEvent(refreshEvent);
     
   }
 

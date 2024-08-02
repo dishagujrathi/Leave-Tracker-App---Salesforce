@@ -28,7 +28,7 @@
               onsuccess={successHandler}
               onsubmit={submitHandler}
               lwc:ref="leaveRequestFrom">
-                <lightning-input-field field-name="User__c"> </lightning-input-field>
+                <lightning-input-field field-name="User__c" value={currentUserId}> </lightning-input-field>
                 <lightning-input-field field-name="From_Date__c"> </lightning-input-field>
                 <lightning-input-field field-name="To_Date__c"> </lightning-input-field>
                 <lightning-input-field field-name="Reason__c"> </lightning-input-field>

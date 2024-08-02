@@ -1,12 +1,12 @@
-import { LightningElement } from 'lwc';
-//import { LightningElement, wire } from 'lwc';
-import getMyLeaves from '@salesforce/apex/LeaveRequstController.getMyLeaves';
+import { api, LightningElement, wire } from 'lwc';
+import getLeaveRequests from '@salesforce/apex/LeaveRequstController.getLeaveRequests';
 import { ShowToastEvent} from 'lightning/platformShowToastEvent';
 import Id from '@salesforce/user/Id';
 import { refreshApex} from '@salesforce/apex';
 
 const COLUMNS = [
   {label : 'Request id', fieldName:'Name', cellAttributes:{ class: { fieldName: 'cellClass'}}},
+  {label : 'User', fieldName:'userName',cellAttributes:{ class: { fieldName: 'cellClass'}}},
   {label : 'From Date', fieldName:'From_Date__c',cellAttributes:{ class: { fieldName: 'cellClass'}}},
   {label : 'To Date', fieldName:'To_Date__c', cellAttributes:{ class: { fieldName: 'cellClass'}}},
   {label : 'Reason', fieldName:'Reason__c', cellAttributes:{ class: { fieldName: 'cellClass'}}},
@@ -26,19 +26,20 @@ const COLUMNS = [
 ];
 export default class LeaveRequests extends LightningElement {
   columns = COLUMNS;
-  myLeaves = [];
-  myLeavesWireResult;
+  leaveRequests = [];
+  leaveRequestsWireResult;
   showModalPopup = false;
   objectApiName = 'LeaveRequest__c';
   recordId ='';
   currentUserId = Id;
 
-  @wire(getMyLeaves)
+  @wire(getLeaveRequests)
   wiredMyLeaves(result) {
-    this.myLeavesWireResult = result;
+    this.leaveRequestsWireResult = result;
     if (result.data) {
-      this.myLeaves = result.data.map (a => ({
+      this.leaveRequests = result.data.map (a => ({
         ...a,
+        userName:a.User__r.Name,
         cellClass: a.Status__c == 'Approved' ? 'slds-theme_success' : a.Status__c == 'Rejected'?'slds-theme_warning':'',
         isEditDisabled: a.Status__c != 'Pending'
       }
@@ -51,15 +52,15 @@ export default class LeaveRequests extends LightningElement {
   }
 
   get noRecordsFound(){
-    return this.myLeaves.length === 0;
+    return this.leaveRequests.length === 0;
   }
 
   get hasErrors(){
-    return this.myLeavesWireResult.error;
+    return this.leaveRequestsWireResult.error;
   }
 
   get hasData(){
-    return this.myLeavesWireResult.data;
+    return this.leaveRequestsWireResult.data;
   }
 
   newRequestClickHandler(){
@@ -80,26 +81,15 @@ export default class LeaveRequests extends LightningElement {
   successHandler(event){
     this.showModalPopup = false;
     this.showToast('Data saved successfuly');
-    refreshApex(this.myLeavesWireResult);
+    this.refreshGrid();
     
+   
   }
 
-  submitHandler(event){
-    event.preventDefault();
-    const fields = { ...event.detail.fields};
-    fields.Status__c= 'Pending';
-    if(new Date(fields.From_Date__c) > new Date(fields.To_Date__c)){
-      this.showToast('From date should not be greater than To Date','Error','error');
-
-    }
-    else if(new Date() > new Date(fields.From_Date__c)){
-       this.showToast('From date should not be less than Today','Error', 'error')
-    }
-    else{
-      this.refs.leaveRequestFrom.submit(fields);
-    }
-
-  }
+  @api
+  refreshGrid(){
+    refreshApex(this.leaveRequestsWireResult);
+   }
 
   showToast(message, title = 'success', variant='success'){
 

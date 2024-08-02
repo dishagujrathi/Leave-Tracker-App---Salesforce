@@ -1,7 +1,7 @@
 <template>
     <lightning-card>
      
-     <lightning-datatable key-field="Id" data={myLeaves} columns={columns}
+     <lightning-datatable key-field="Id" data={leaveRequests} columns={columns}
        onrowaction={rowActionHandler}></lightning-datatable>
      <template lwc:if={noRecordsFound}>
        <div class="slds-align_absolute-center slds--p-around_small slds-text-heading_medium"> No Records Found </div></template>
@@ -26,10 +26,12 @@
                record-id={recordId}
                onsuccess={successHandler}
                lwc:ref="leaveRequestFrom">
-                 <lightning-input-field field-name="User__c"> </lightning-input-field>
-                 <lightning-input-field field-name="From_Date__c"> </lightning-input-field>
-                 <lightning-input-field field-name="To_Date__c"> </lightning-input-field>
-                 <lightning-input-field field-name="Reason__c"> </lightning-input-field>
+                 <lightning-output-field field-name="User__c"> </lightning-output-field>
+                 <lightning-output-field field-name="From_Date__c"> </lightning-output-field>
+                 <lightning-output-field field-name="To_Date__c"> </lightning-output-field>
+                 <lightning-output-field field-name="Reason__c"> </lightning-output-field>
+                 <lightning-input-field field-name="Status__c"> </lightning-input-field>
+                 <lightning-input-field field-name="Manager_comment__c"> </lightning-input-field>
      <div class="slds-var-m-top_medium">
          <lightning-button variant="brand" type="submit" label="Save">
          </lightning-button>
